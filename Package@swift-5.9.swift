@@ -51,13 +51,16 @@ let package = Package(
         .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay"),
       ],
       swiftSettings: [
-        .enableExperimentalFeature("StrictConcurrency")
+        //.enableExperimentalFeature("StrictConcurrency")
       ]
     ),
     .testTarget(
       name: "ComposableArchitectureTests",
       dependencies: [
         "ComposableArchitecture"
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
       ]
     ),
     .macro(
@@ -67,7 +70,7 @@ let package = Package(
         .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
       ],
       swiftSettings: [
-        .enableExperimentalFeature("StrictConcurrency")
+        //.enableExperimentalFeature("StrictConcurrency")
       ]
     ),
     .testTarget(
