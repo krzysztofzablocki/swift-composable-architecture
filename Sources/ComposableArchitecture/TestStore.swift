@@ -2168,56 +2168,56 @@ extension TestStore {
   ///
   /// - Parameter toViewAction: A case path from action to a bindable view action.
   /// - Returns: A binding view store.
-//  public func bindings<ViewAction: BindableAction>(
-//    action toViewAction: CaseKeyPath<Action, ViewAction>
-//  ) -> BindingViewStore<State> where State == ViewAction.State, Action: CasePathable {
-//    BindingViewStore(
-//      store: Store(initialState: self.state) {
-//        BindingReducer(action: toViewAction)
-//      }
-//      .scope(state: \.self, action: toViewAction)
-//    )
-//  }
+  public func bindings<ViewAction: BindableAction>(
+    action toViewAction: CaseKeyPath<Action, ViewAction>
+  ) -> BindingViewStore<State> where State == ViewAction.State, Action: CasePathable {
+    BindingViewStore(
+      store: Store(initialState: self.state) {
+        BindingReducer(action: toViewAction)
+      }
+      .scope(state: \.self, action: toViewAction)
+    )
+  }
 
-//  @available(
-//    iOS,
-//    deprecated: 9999,
-//    message:
-//      "Use the version of this operator with case key paths, instead. See the following migration guide for more information: https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/migratingto1.4#Using-case-key-paths"
-//  )
-//  @available(
-//    macOS,
-//    deprecated: 9999,
-//    message:
-//      "Use the version of this operator with case key paths, instead. See the following migration guide for more information: https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/migratingto1.4#Using-case-key-paths"
-//  )
-//  @available(
-//    tvOS,
-//    deprecated: 9999,
-//    message:
-//      "Use the version of this operator with case key paths, instead. See the following migration guide for more information: https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/migratingto1.4#Using-case-key-paths"
-//  )
-//  @available(
-//    watchOS,
-//    deprecated: 9999,
-//    message:
-//      "Use the version of this operator with case key paths, instead. See the following migration guide for more information: https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/migratingto1.4#Using-case-key-paths"
-//  )
-//  public func bindings<ViewAction: BindableAction>(
-//    action toViewAction: AnyCasePath<Action, ViewAction>
-//  ) -> BindingViewStore<State> where State == ViewAction.State {
-//    BindingViewStore(
-//      store: Store(initialState: self.state) {
-//        BindingReducer(action: toViewAction.extract(from:))
-//      }
-//      .scope(
-//        id: nil,
-//        state: ToState(\.self),
-//        action: toViewAction.embed,
-//        isInvalid: nil
-//      )
-//    )
-//  }
+  @available(
+    iOS,
+    deprecated: 9999,
+    message:
+      "Use the version of this operator with case key paths, instead. See the following migration guide for more information: https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/migratingto1.4#Using-case-key-paths"
+  )
+  @available(
+    macOS,
+    deprecated: 9999,
+    message:
+      "Use the version of this operator with case key paths, instead. See the following migration guide for more information: https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/migratingto1.4#Using-case-key-paths"
+  )
+  @available(
+    tvOS,
+    deprecated: 9999,
+    message:
+      "Use the version of this operator with case key paths, instead. See the following migration guide for more information: https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/migratingto1.4#Using-case-key-paths"
+  )
+  @available(
+    watchOS,
+    deprecated: 9999,
+    message:
+      "Use the version of this operator with case key paths, instead. See the following migration guide for more information: https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/migratingto1.4#Using-case-key-paths"
+  )
+  public func bindings<ViewAction: BindableAction>(
+    action toViewAction: AnyCasePath<Action, ViewAction>
+  ) -> BindingViewStore<State> where State == ViewAction.State {
+    BindingViewStore(
+      store: Store(initialState: self.state) {
+        BindingReducer(action: toViewAction.extract(from:))
+      }
+      .scope(
+        id: nil,
+        state: ToState(\.self),
+        action: toViewAction.embed,
+        isInvalid: nil
+      )
+    )
+  }
 }
 
 extension TestStore where Action: BindableAction, State == Action.State {
@@ -2242,9 +2242,9 @@ extension TestStore where Action: BindableAction, State == Action.State {
   /// ```
   ///
   /// - Returns: A binding view store.
-//  public var bindings: BindingViewStore<State> {
-//    self.bindings(action: AnyCasePath())
-//  }
+  public var bindings: BindingViewStore<State> {
+    self.bindings(action: AnyCasePath())
+  }
 }
 
 /// The type returned from ``TestStore/send(_:assert:file:line:)-2co21`` that represents the
