@@ -134,8 +134,13 @@ extension Publishers {
 }
 
 extension Publishers.Create {
-  fileprivate final class Subscription<Downstream: Subscriber>: Combine.Subscription
-  where Downstream.Input == Output, Downstream.Failure == Never {
+  fileprivate final class Subscription<Downstream: Subscriber>: 
+    Combine.Subscription,
+    @unchecked Sendable
+  where
+    Downstream.Input == Output,
+    Downstream.Failure == Never
+  {
     private let buffer: DemandBuffer<Downstream>
     private var cancellable: Cancellable?
 
@@ -172,13 +177,13 @@ extension Publishers.Create.Subscription: CustomStringConvertible {
 }
 
 extension Effect {
-  struct Subscriber {
-    private let _send: (Action) -> Void
-    private let _complete: (Subscribers.Completion<Never>) -> Void
+  struct Subscriber: Sendable {
+    private let _send: @Sendable (Action) -> Void
+    private let _complete: @Sendable (Subscribers.Completion<Never>) -> Void
 
     init(
-      send: @escaping (Action) -> Void,
-      complete: @escaping (Subscribers.Completion<Never>) -> Void
+      send: @Sendable @escaping (Action) -> Void,
+      complete: @Sendable @escaping (Subscribers.Completion<Never>) -> Void
     ) {
       self._send = send
       self._complete = complete

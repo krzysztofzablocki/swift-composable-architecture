@@ -49,6 +49,9 @@ let package = Package(
         .product(name: "Perception", package: "swift-perception"),
         .product(name: "SwiftUINavigationCore", package: "swiftui-navigation"),
         .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay"),
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
       ]
     ),
     .testTarget(
@@ -62,6 +65,9 @@ let package = Package(
       dependencies: [
         .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
         .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
       ]
     ),
     .testTarget(
@@ -81,14 +87,13 @@ let package = Package(
   ]
 )
 
-for target in package.targets where target.type != .system {
-  target.swiftSettings = target.swiftSettings ?? []
-  target.swiftSettings?.append(
-    .unsafeFlags([
+//for target in package.targets where target.type != .system {
+//  target.swiftSettings = target.swiftSettings ?? []
+//  target.swiftSettings?.append(
+//    .unsafeFlags([
 //      "-c", "release",
 //      "-emit-module-interface", "-enable-library-evolution",
-      "-Xfrontend", "-warn-concurrency",
 //      "-Xfrontend", "-enable-actor-data-race-checks",
-    ])
-  )
-}
+//    ])
+//  )
+//}

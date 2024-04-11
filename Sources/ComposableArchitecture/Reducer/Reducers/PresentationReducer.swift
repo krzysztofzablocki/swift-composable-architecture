@@ -676,11 +676,11 @@ struct PresentationDismissID: Hashable {
   @usableFromInline init() {}
 }
 @usableFromInline
-struct OnFirstAppearID: Hashable {
+struct OnFirstAppearID: Hashable, Sendable {
   @usableFromInline init() {}
 }
 
-public struct _PresentedID: Hashable {
+public struct _PresentedID: Hashable, Sendable {
   @inlinable
   public init() {
     self.init(internal: ())
@@ -704,7 +704,7 @@ extension Task where Success == Never, Failure == Never {
 }
 
 extension Effect {
-  internal func _cancellable<ID: Hashable>(
+  internal func _cancellable<ID: Hashable & Sendable>(
     id: ID = _PresentedID(),
     navigationIDPath: NavigationIDPath,
     cancelInFlight: Bool = false

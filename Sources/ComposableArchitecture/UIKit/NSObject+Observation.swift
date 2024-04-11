@@ -159,20 +159,21 @@
 
     fileprivate var tokens: Set<ObservationToken> {
       get {
-        (objc_getAssociatedObject(self, &NSObject.tokensHandle) as? Set<ObservationToken>) ?? []
+        (objc_getAssociatedObject(self, tokensHandle) as? Set<ObservationToken>) ?? []
       }
       set {
         objc_setAssociatedObject(
           self,
-          &NSObject.tokensHandle,
+          tokensHandle,
           newValue,
           .OBJC_ASSOCIATION_RETAIN_NONATOMIC
         )
       }
     }
 
-    private static var tokensHandle: UInt8 = 0
   }
+
+  private let tokensHandle = malloc(1)!
 
   /// A token for cancelling observation created with ``ObjectiveC/NSObject/observe(_:)``.
   public final class ObservationToken: NSObject, Sendable {
