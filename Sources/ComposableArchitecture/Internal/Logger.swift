@@ -1,5 +1,6 @@
 import OSLog
 
+@MainActor
 @_spi(Logging)
 public final class Logger {
   public static let shared = Logger()
@@ -35,5 +36,5 @@ public final class Logger {
   #endif
 }
 
-private var isRunningForPreviews =
+private let isRunningForPreviews =
   ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"

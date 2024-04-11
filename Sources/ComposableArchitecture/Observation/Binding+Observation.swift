@@ -68,7 +68,7 @@
   }
 
   extension Store where State: ObservableState, Action: BindableAction, Action.State == State {
-    public subscript<Value: Equatable>(
+    public subscript<Value: Equatable & Sendable>(
       dynamicMember keyPath: WritableKeyPath<State, Value>
     ) -> Value {
       get { self.state[keyPath: keyPath] }
@@ -84,6 +84,7 @@
   where
     State: Equatable,
     State: ObservableState,
+    State: Sendable,
     Action: BindableAction,
     Action.State == State
   {
@@ -104,7 +105,7 @@
     Action.ViewAction: BindableAction,
     Action.ViewAction.State == State
   {
-    public subscript<Value: Equatable>(
+    public subscript<Value: Equatable & Sendable>(
       dynamicMember keyPath: WritableKeyPath<State, Value>
     ) -> Value {
       get { self.state[keyPath: keyPath] }
@@ -120,6 +121,7 @@
   where
     State: Equatable,
     State: ObservableState,
+    State: Sendable,
     Action: ViewAction,
     Action.ViewAction: BindableAction,
     Action.ViewAction.State == State

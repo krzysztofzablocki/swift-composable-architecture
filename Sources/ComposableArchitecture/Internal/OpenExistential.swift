@@ -16,6 +16,8 @@ func _identifiableID(_ value: Any) -> AnyHashable? {
   func open(_ value: some Identifiable) -> AnyHashable {
     value.id
   }
-  guard let value = value as? any Identifiable else { return nil }
+  guard 
+    let value = value as? any Identifiable
+  else { return nil }
   return open(value)
 }

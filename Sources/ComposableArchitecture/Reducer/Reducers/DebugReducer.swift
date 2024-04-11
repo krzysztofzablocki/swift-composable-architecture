@@ -1,7 +1,7 @@
 import Combine
 import Dispatch
 
-extension Reducer {
+extension Reducer where State: Sendable, Action: Sendable {
   #if swift(>=5.8)
     /// Enhances a reducer with debug logging of received actions and state mutations for the given
     /// printer.
@@ -31,13 +31,13 @@ extension Reducer {
 
 private let printQueue = DispatchQueue(label: "co.pointfree.swift-composable-architecture.printer")
 
-public struct _ReducerPrinter<State, Action> {
-  private let _printChange: (_ receivedAction: Action, _ oldState: State, _ newState: State) -> Void
+public struct _ReducerPrinter<State, Action>: Sendable {
+  private let _printChange: @Sendable (_ receivedAction: Action, _ oldState: State, _ newState: State) -> Void
   @usableFromInline
   let queue: DispatchQueue
 
   public init(
-    printChange: @escaping (_ receivedAction: Action, _ oldState: State, _ newState: State) -> Void,
+    printChange: @Sendable @escaping (_ receivedAction: Action, _ oldState: State, _ newState: State) -> Void,
     queue: DispatchQueue? = nil
   ) {
     self._printChange = printChange
@@ -68,7 +68,11 @@ extension _ReducerPrinter {
   }
 }
 
-public struct _PrintChangesReducer<Base: Reducer>: Reducer {
+public struct _PrintChangesReducer<Base: Reducer>: Reducer
+where
+  Base.State: Sendable,
+  Base.Action: Sendable
+{
   @usableFromInline
   let base: Base
 
