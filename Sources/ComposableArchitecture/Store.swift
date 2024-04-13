@@ -195,7 +195,7 @@ public final class Store<State, Action> {
   }
 
   deinit {
-    MainActor.assumeIsolated {
+    assumeMainActorIsolated {
       Logger.shared.log("\(storeTypeName(of: self)).deinit")
     }
   }
@@ -401,7 +401,9 @@ public final class Store<State, Action> {
     fromAction: @escaping (Action) -> Any
   ) {
     defer {
-      MainActor.assumeIsolated { Logger.shared.log("\(storeTypeName(of: self)).init") }
+      assumeMainActorIsolated {
+        Logger.shared.log("\(storeTypeName(of: self)).init")
+      }
     }
     self.rootStore = rootStore
     self.toState = toState

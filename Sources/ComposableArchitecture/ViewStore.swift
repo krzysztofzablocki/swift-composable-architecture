@@ -148,7 +148,7 @@ public final class ViewStore<ViewState, ViewAction>: ObservableObject {
   ) {
     #if DEBUG
       let storeTypeName = ComposableArchitecture.storeTypeName(of: store)
-      MainActor.assumeIsolated {
+      assumeMainActorIsolated {
         Logger.shared.log("View\(storeTypeName).init")
       }
       self.storeTypeName = storeTypeName
@@ -173,7 +173,7 @@ public final class ViewStore<ViewState, ViewAction>: ObservableObject {
   init(_ viewStore: ViewStore<ViewState, ViewAction>) {
     #if DEBUG
       let storeTypeName = viewStore.storeTypeName
-      MainActor.assumeIsolated {
+      assumeMainActorIsolated {
         Logger.shared.log("View\(storeTypeName).init")
       }
       self.storeTypeName = storeTypeName
@@ -188,7 +188,7 @@ public final class ViewStore<ViewState, ViewAction>: ObservableObject {
 
   #if DEBUG
     deinit {
-      MainActor.assumeIsolated {
+      assumeMainActorIsolated {
         Logger.shared.log("View\(self.storeTypeName).deinit")
       }
     }
