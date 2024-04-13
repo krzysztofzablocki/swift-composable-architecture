@@ -60,7 +60,7 @@ let package = Package(
         "ComposableArchitecture"
       ],
       swiftSettings: [
-        .enableExperimentalFeature("StrictConcurrency")
+        //.enableExperimentalFeature("StrictConcurrency")
       ]
     ),
     .macro(
