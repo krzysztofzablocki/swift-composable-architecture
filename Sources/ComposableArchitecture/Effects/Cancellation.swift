@@ -221,6 +221,7 @@ extension Task where Success == Never, Failure == Never {
   public var _cancellationCancellables = CancellablesCollection()
   private let _cancellablesLock = NSRecursiveLock()
 #else
+  @_spi(Internals)
   public var _cancellationCancellables = CancellablesCollection()
   private let _cancellablesLock = NSRecursiveLock()
 #endif
