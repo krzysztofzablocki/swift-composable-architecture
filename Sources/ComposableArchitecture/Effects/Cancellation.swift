@@ -215,8 +215,15 @@ extension Task where Success == Never, Failure == Never {
   }
 }
 
-@_spi(Internals) public var _cancellationCancellables = CancellablesCollection()
-private let _cancellablesLock = NSRecursiveLock()
+#if swift(>=5.10)
+  @_spi(Internals)
+  nonisolated(unsafe)
+  public var _cancellationCancellables = CancellablesCollection()
+  private let _cancellablesLock = NSRecursiveLock()
+#else
+  public var _cancellationCancellables = CancellablesCollection()
+  private let _cancellablesLock = NSRecursiveLock()
+#endif
 
 @rethrows
 private protocol _ErrorMechanism {

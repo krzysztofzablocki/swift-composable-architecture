@@ -180,7 +180,7 @@ extension Reducer {
 }
 
 public struct _ForEachReducer<
-  Parent: Reducer, ID: Hashable, Element: Reducer
+  Parent: Reducer, ID: Hashable & Sendable, Element: Reducer
 >: Reducer {
   @usableFromInline
   let parent: Parent
@@ -281,7 +281,7 @@ public struct _ForEachReducer<
     return self.element
       .dependency(\.navigationIDPath, elementNavigationID)
       .reduce(into: &state[keyPath: self.toElementsState][id: id]!, action: elementAction)
-      .map { self.toElementAction.embed((id, $0)) }
+      .map { [toElementAction] in toElementAction.embed((id, $0)) }
       ._cancellable(id: navigationID, navigationIDPath: self.navigationIDPath)
   }
 }

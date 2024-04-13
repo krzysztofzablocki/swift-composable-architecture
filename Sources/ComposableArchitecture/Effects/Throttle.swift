@@ -23,7 +23,7 @@ extension Effect {
   ///     `false`, the publisher emits the first element received during the interval.
   /// - Returns: An effect that emits either the most-recent or first element received during the
   ///   specified interval.
-  public func throttle<ID: Hashable, S: Scheduler>(
+  public func throttle<ID: Hashable & Sendable, S: Scheduler>(
     id: ID,
     for interval: S.SchedulerTimeType.Stride,
     scheduler: S,
@@ -81,6 +81,11 @@ extension Effect {
   }
 }
 
+#if swift(>=5.10)
+nonisolated(unsafe) var throttleTimes: [AnyHashable: Any] = [:]
+nonisolated(unsafe) var throttleValues: [AnyHashable: Any] = [:]
+#else
 var throttleTimes: [AnyHashable: Any] = [:]
 var throttleValues: [AnyHashable: Any] = [:]
+#endif
 let throttleLock = NSRecursiveLock()

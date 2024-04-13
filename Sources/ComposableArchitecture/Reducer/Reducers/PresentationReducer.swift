@@ -573,7 +573,7 @@ public struct _PresentationReducer<Base: Reducer, Destination: Reducer>: Reducer
         .reduce(
           into: &state[keyPath: self.toPresentationState].wrappedValue!, action: destinationAction
         )
-        .map { self.toPresentationAction.embed(.presented($0)) }
+        .map { [toPresentationAction] in toPresentationAction.embed(.presented($0)) }
         ._cancellable(navigationIDPath: destinationNavigationIDPath)
       baseEffects = self.base.reduce(into: &state, action: action)
       if let ephemeralType = ephemeralType(of: destinationState),
@@ -672,7 +672,7 @@ public struct _PresentationReducer<Base: Reducer, Destination: Reducer>: Reducer
 }
 
 @usableFromInline
-struct PresentationDismissID: Hashable {
+struct PresentationDismissID: Hashable, Sendable {
   @usableFromInline init() {}
 }
 @usableFromInline
