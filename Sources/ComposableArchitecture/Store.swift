@@ -195,9 +195,7 @@ public final class Store<State, Action> {
   }
 
   deinit {
-    assumeMainActorIsolated {
-      Logger.shared.log("\(storeTypeName(of: self)).deinit")
-    }
+    Logger.shared.log("\(storeTypeName(of: self)).deinit")
   }
 
   /// Calls the given closure with a snapshot of the current state of the store.
@@ -401,9 +399,7 @@ public final class Store<State, Action> {
     fromAction: @escaping (Action) -> Any
   ) {
     defer {
-      assumeMainActorIsolated {
-        Logger.shared.log("\(storeTypeName(of: self)).init")
-      }
+      Logger.shared.log("\(storeTypeName(of: self)).init")
     }
     self.rootStore = rootStore
     self.toState = toState

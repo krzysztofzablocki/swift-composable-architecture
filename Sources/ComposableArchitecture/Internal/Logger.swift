@@ -1,6 +1,5 @@
 import OSLog
 
-@MainActor
 @_spi(Logging)
 public final class Logger {
   public static let shared = Logger()
