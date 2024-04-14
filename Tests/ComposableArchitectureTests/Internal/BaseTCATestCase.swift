@@ -2,6 +2,7 @@
 import XCTest
 
 class BaseTCATestCase: XCTestCase {
+  @MainActor
   override func tearDown() {
     super.tearDown()
     XCTAssertEqual(_cancellationCancellables.count, 0, "\(self)")
