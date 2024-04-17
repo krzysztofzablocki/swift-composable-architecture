@@ -4,7 +4,7 @@ import GameCore
 @Reducer
 public struct NewGame {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     @Presents public var game: Game.State?
     public var oPlayerName = ""
     public var xPlayerName = ""
@@ -12,7 +12,7 @@ public struct NewGame {
     public init() {}
   }
 
-  public enum Action: BindableAction {
+  public enum Action: BindableAction, Sendable {
     case binding(BindingAction<State>)
     case game(PresentationAction<Game.Action>)
     case letsPlayButtonTapped

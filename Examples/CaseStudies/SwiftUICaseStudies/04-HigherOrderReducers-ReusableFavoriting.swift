@@ -36,8 +36,8 @@ enum FavoritingAction {
 struct Favoriting<ID: Hashable & Sendable> {
   let favorite: @Sendable (ID, Bool) async throws -> Bool
 
-  private struct CancelID: Hashable {
-    let id: AnyHashable
+  private struct CancelID: Hashable, Sendable {
+    let id: ID
   }
 
   var body: some Reducer<FavoritingState<ID>, FavoritingAction> {

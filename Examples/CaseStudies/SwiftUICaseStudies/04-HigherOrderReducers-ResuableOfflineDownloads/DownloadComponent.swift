@@ -5,7 +5,7 @@ import SwiftUI
 struct DownloadComponent {
   struct State: Equatable {
     @PresentationState var alert: AlertState<Action.Alert>?
-    let id: AnyHashable
+    let id: UUID
     var mode: Mode
     let url: URL
   }
@@ -171,7 +171,7 @@ struct DownloadComponentView: View {
   DownloadComponentView(
     store: Store(
       initialState: DownloadComponent.State(
-        id: "deadbeef",
+        id: UUID(),
         mode: .notDownloaded,
         url: URL(fileURLWithPath: "/")
       )

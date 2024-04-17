@@ -4,7 +4,7 @@ import SwiftUI
 @Reducer
 public struct Game: Sendable {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     public var board: Three<Three<Player?>> = .empty
     public var currentPlayer: Player = .x
     public let oPlayerName: String

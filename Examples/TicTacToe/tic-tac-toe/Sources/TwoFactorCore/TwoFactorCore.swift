@@ -6,7 +6,7 @@ import Dispatch
 @Reducer
 public struct TwoFactor: Sendable {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     @Presents public var alert: AlertState<Action.Alert>?
     public var code = ""
     public var isFormValid = false

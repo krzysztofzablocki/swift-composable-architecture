@@ -6,7 +6,7 @@ import TwoFactorCore
 @Reducer
 public struct Login: Sendable {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     @Presents public var alert: AlertState<Action.Alert>?
     public var email = ""
     public var isFormValid = false
