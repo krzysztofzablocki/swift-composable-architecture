@@ -88,7 +88,6 @@ for target in package.targets where target.type != .system {
 //    .unsafeFlags([
 //      "-c", "release",
 //      "-emit-module-interface", "-enable-library-evolution",
-//      "-Xfrontend", "-enable-actor-data-race-checks",
 //    ])
 //  )
 }
