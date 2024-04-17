@@ -147,9 +147,8 @@ public final class ViewStore<ViewState, ViewAction>: ObservableObject {
     removeDuplicates isDuplicate: @escaping (_ lhs: ViewState, _ rhs: ViewState) -> Bool
   ) {
     #if DEBUG
-      let storeTypeName = ComposableArchitecture.storeTypeName(of: store)
-      Logger.shared.log("View\(storeTypeName).init")
-      self.storeTypeName = storeTypeName
+      self.storeTypeName = ComposableArchitecture.storeTypeName(of: store)
+      Logger.shared.log("View\(self.storeTypeName).init")
     #endif
     self.store = store.scope(
       id: nil,
@@ -170,9 +169,8 @@ public final class ViewStore<ViewState, ViewAction>: ObservableObject {
 
   init(_ viewStore: ViewStore<ViewState, ViewAction>) {
     #if DEBUG
-      let storeTypeName = viewStore.storeTypeName
-      Logger.shared.log("View\(storeTypeName).init")
-      self.storeTypeName = storeTypeName
+      self.storeTypeName = viewStore.storeTypeName
+      Logger.shared.log("View\(self.storeTypeName).init")
     #endif
     self.store = viewStore.store
     self._state = viewStore._state
