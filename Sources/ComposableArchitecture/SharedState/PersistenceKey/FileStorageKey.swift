@@ -18,10 +18,10 @@ extension PersistenceReaderKey {
 /// Use ``PersistenceReaderKey/fileStorage(_:)`` to create values of this type.
 public final class FileStorageKey<Value: Codable & Sendable>: PersistenceKey, Sendable {
   fileprivate let storage: FileStorage
-  let data = LockIsolated(Data())
+  fileprivate let state = LockIsolated(State())
   let url: URL
 
-  struct Data {
+  fileprivate struct State {
     var isSetting = false
     var value: Value?
     var workItem: DispatchWorkItem?
@@ -46,30 +46,30 @@ public final class FileStorageKey<Value: Codable & Sendable>: PersistenceKey, Se
   }
 
   public func save(_ value: Value) {
-    self.data.withValue { data in
-      if data.workItem == nil {
-        data.isSetting = true
+    self.state.withValue { state in
+      if state.workItem == nil {
+        state.isSetting = true
         try? self.storage.save(JSONEncoder().encode(value), self.url)
         let workItem = DispatchWorkItem {
-          self.data.withValue { data in
+          self.state.withValue { state in
             defer {
-              data.value = nil
-              data.workItem = nil
+              state.value = nil
+              state.workItem = nil
             }
-            guard let value = data.value
+            guard let value = state.value
             else { return }
-            data.isSetting = true
+            state.isSetting = true
             try? self.storage.save(JSONEncoder().encode(value), self.url)
           }
         }
-        data.workItem = workItem
+        state.workItem = workItem
         if canListenForResignActive {
           self.storage.asyncAfter(.seconds(1), workItem)
         } else {
           self.storage.async(workItem)
         }
       } else {
-        data.value = value
+        state.value = value
       }
     }
   }
@@ -91,21 +91,21 @@ public final class FileStorageKey<Value: Codable & Sendable>: PersistenceKey, Se
         let writeCancellable = self.storage.fileSystemSource(self.url, [.write]) { [weak self] in
           guard let self else { return }
 
-          self.data.withValue { data in
-            if data.isSetting {
-              data.isSetting = false
+          self.state.withValue { state in
+            if state.isSetting {
+              state.isSetting = false
             } else {
-              data.workItem?.cancel()
-              data.workItem = nil
+              state.workItem?.cancel()
+              state.workItem = nil
               didSet(self.load(initialValue: initialValue))
             }
           }
         }
         let deleteCancellable = self.storage.fileSystemSource(self.url, [.delete, .rename]) { [weak self] in
           guard let self else { return }
-          self.data.withValue { data in
-            data.workItem?.cancel()
-            data.workItem = nil
+          self.state.withValue { state in
+            state.workItem?.cancel()
+            state.workItem = nil
           }
           `didSet`(self.load(initialValue: initialValue))
           setUpSources()
@@ -157,15 +157,15 @@ public final class FileStorageKey<Value: Codable & Sendable>: PersistenceKey, Se
   }
 
   private func performImmediately() {
-    self.data.withValue { data in
-      guard let workItem = data.workItem
+    self.state.withValue { state in
+      guard let workItem = state.workItem
       else { return }
       self.storage.async(workItem)
       self.storage.async(
         DispatchWorkItem {
-          self.data.withValue { data in
-            data.workItem?.cancel()
-            data.workItem = nil
+          self.state.withValue { state in
+            state.workItem?.cancel()
+            state.workItem = nil
           }
         }
       )
