@@ -77,6 +77,27 @@ final class FileStorageTests: XCTestCase {
     }
   }
 
+  func testCancelThrottleWhenFileIsDeleted() async throws {
+    try await withMainSerialExecutor {
+      try? FileManager.default.removeItem(at: .fileURL)
+
+      try await withDependencies {
+        $0.defaultFileStorage = .fileSystem
+      } operation: {
+        @Shared(.fileStorage(.fileURL)) var users = [User.blob]
+        await Task.yield()
+        XCTAssertNoDifference(users, [.blob])
+
+        users = [.blobJr]  // NB: Saved immediately
+        users = [.blobSr]  // NB: Throttled for 1 second
+        try FileManager.default.removeItem(at: .fileURL)
+        try await Task.sleep(nanoseconds: 1_200_000_000)
+        XCTAssertNoDifference(users, [.blob])
+        try XCTAssertEqual(Data(contentsOf: .fileURL), Data())
+      }
+    }
+  }
+
   func testWillResign() throws {
     guard let willResignNotificationName else { return }
 

@@ -103,10 +103,10 @@ public final class FileStorageKey<Value: Codable & Sendable>: PersistenceKey, Se
         }
         let deleteCancellable = self.storage.fileSystemSource(self.url, [.delete, .rename]) { [weak self] in
           guard let self else { return }
-//          self.data.withValue { data in
-//            data.workItem?.cancel()
-//            data.workItem = nil
-//          }
+          self.data.withValue { data in
+            data.workItem?.cancel()
+            data.workItem = nil
+          }
           `didSet`(self.load(initialValue: initialValue))
           setUpSources()
         }
@@ -286,11 +286,15 @@ public struct FileStorage: Hashable, Sendable {
       asyncAfter: { scheduler.schedule(after: scheduler.now.advanced(by: .init($0)), $1.perform) },
       createDirectory: { _, _ in },
       fileExists: { fileSystem.keys.contains($0) },
-      fileSystemSource: { url, _, handler in
-        let handler = Handler(operation: handler)
-        sourceHandlers.withValue { _ = $0[url, default: []].insert(handler) }
-        return AnyCancellable {
-          sourceHandlers.withValue { _ = $0[url]?.remove(handler) }
+      fileSystemSource: { url, event, handler in
+        if event.contains(.write) {
+          let handler = Handler(operation: handler)
+          sourceHandlers.withValue { _ = $0[url, default: []].insert(handler) }
+          return AnyCancellable {
+            sourceHandlers.withValue { _ = $0[url]?.remove(handler) }
+          }
+        } else {
+          return AnyCancellable {}
         }
       },
       load: {
