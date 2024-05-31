@@ -5,8 +5,8 @@ import SwiftUI
     /// Derives a binding to a store focused on ``StackState`` and ``StackAction``.
     ///
     /// This operator is most used in conjunction with `NavigationStack`, and in particular
-    /// the initializer ``SwiftUI/NavigationStack/init(path:root:destination:)`` that ships with
-    /// this library.
+    /// the initializer ``SwiftUI/NavigationStack/init(path:root:destination:fileID:line:)`` that
+    /// ships with this library.
     ///
     /// For example, suppose you have a feature that holds onto ``StackState`` in its state in order
     /// to represent all the screens that can be pushed onto a navigation stack:
@@ -41,7 +41,7 @@ import SwiftUI
     /// more information.
     ///
     /// Then in the view you can use this operator, with
-    /// `NavigationStack` ``SwiftUI/NavigationStack/init(path:root:destination:)``, to
+    /// `NavigationStack` ``SwiftUI/NavigationStack/init(path:root:destination:fileID:line:)``, to
     /// derive a store for each element in the stack:
     ///
     /// ```swift
@@ -70,7 +70,7 @@ import SwiftUI
   extension SwiftUI.Bindable {
     /// Derives a binding to a store focused on ``StackState`` and ``StackAction``.
     ///
-    /// See ``SwiftUI/Binding/scope(state:action:)-4mj4d`` defined on `Binding` for more
+    /// See ``SwiftUI/Binding/scope(state:action:fileID:line:)`` defined on `Binding` for more
     /// information.
     public func scope<State: ObservableState, Action, ElementState, ElementAction>(
       state: KeyPath<State, StackState<ElementState>>,
@@ -88,7 +88,7 @@ import SwiftUI
   extension Perception.Bindable {
     /// Derives a binding to a store focused on ``StackState`` and ``StackAction``.
     ///
-    /// See ``SwiftUI/Binding/scope(state:action:)-4mj4d`` defined on `Binding` for more
+    /// See ``SwiftUI/Binding/scope(state:action:fileID:line:)`` defined on `Binding` for more
     /// information.
     public func scope<State: ObservableState, Action, ElementState, ElementAction>(
       state: KeyPath<State, StackState<ElementState>>,
@@ -237,6 +237,14 @@ import SwiftUI
     let line: UInt
     @Environment(\.navigationDestinationType) var navigationDestinationType
 
+    @_spi(Internals)
+    public init(state: State?, @ViewBuilder label: () -> Label, fileID: StaticString, line: UInt) {
+      self.state = state
+      self.label = label()
+      self.fileID = fileID
+      self.line = line
+    }
+
     public var body: some View {
       #if DEBUG
         self.label.onAppear {
@@ -331,7 +339,8 @@ import SwiftUI
     }
   }
 
-  var _isInPerceptionTracking: Bool {
+  @_spi(Internals)
+  public var _isInPerceptionTracking: Bool {
     #if !os(visionOS)
       return _PerceptionLocals.isInPerceptionTracking
     #else
@@ -352,8 +361,16 @@ extension StackState {
   }
 
   public struct Component: Hashable {
-    let id: StackElementID
-    var element: Element
+    @_spi(Internals)
+    public let id: StackElementID
+    @_spi(Internals)
+    public var element: Element
+
+    @_spi(Internals)
+    public init(id: StackElementID, element: Element) {
+      self.id = id
+      self.element = element
+    }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
       lhs.id == rhs.id
@@ -416,7 +433,8 @@ private struct NavigationDestinationTypeKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-  var navigationDestinationType: Any.Type? {
+  @_spi(Internals)
+  public var navigationDestinationType: Any.Type? {
     get { self[NavigationDestinationTypeKey.self] }
     set { self[NavigationDestinationTypeKey.self] = newValue }
   }
