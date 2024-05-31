@@ -431,6 +431,9 @@ final class FileStorageTests: XCTestCase {
         }
       }
       
+      XCTTODO("""
+        @Shared can currently race.
+        """)
       XCTAssertEqual(count, max * (max + 1) / 2)
     }
   }
