@@ -163,7 +163,7 @@
             case .tap:
               return .publisher {
                 Future { callback in
-                  Thread.detachNewThread {
+                  DispatchQueue.global().asyncAfter(deadline: .now() + 0.01) {
                     XCTAssertFalse(Thread.isMainThread, "Effect should send on non-main thread.")
                     callback(.success(.response))
                   }

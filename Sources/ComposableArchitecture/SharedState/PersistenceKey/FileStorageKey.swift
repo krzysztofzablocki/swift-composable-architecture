@@ -17,12 +17,12 @@ extension PersistenceReaderKey {
 ///
 /// Use ``PersistenceReaderKey/fileStorage(_:)`` to create values of this type.
 public final class FileStorageKey<Value: Codable & Sendable>: PersistenceKey, Sendable {
+  fileprivate let isSetting = LockIsolated(false)
   fileprivate let storage: FileStorage
   fileprivate let state = LockIsolated(State())
   let url: URL
 
   fileprivate struct State {
-    var isSetting = false
     var value: Value?
     var workItem: DispatchWorkItem?
   }
@@ -48,7 +48,7 @@ public final class FileStorageKey<Value: Codable & Sendable>: PersistenceKey, Se
   public func save(_ value: Value) {
     self.state.withValue { state in
       if state.workItem == nil {
-        state.isSetting = true
+        self.isSetting.withValue { $0 = true }
         try? self.storage.save(JSONEncoder().encode(value), self.url)
         let workItem = DispatchWorkItem {
           self.state.withValue { state in
@@ -58,7 +58,7 @@ public final class FileStorageKey<Value: Codable & Sendable>: PersistenceKey, Se
             }
             guard let value = state.value
             else { return }
-            state.isSetting = true
+            self.isSetting.withValue { $0 = true }
             try? self.storage.save(JSONEncoder().encode(value), self.url)
           }
         }
@@ -86,14 +86,14 @@ public final class FileStorageKey<Value: Codable & Sendable>: PersistenceKey, Se
         // NB: Make sure there is a file to create a source for.
         if !self.storage.fileExists(self.url) {
           try? self.storage.createDirectory(self.url.deletingLastPathComponent(), true)
-          try? self.storage.save(Foundation.Data(), self.url)
+          try? self.storage.save(Data(), self.url)
         }
         let writeCancellable = self.storage.fileSystemSource(self.url, [.write]) { [weak self] in
           guard let self else { return }
 
           self.state.withValue { state in
-            if state.isSetting {
-              state.isSetting = false
+            if self.isSetting.value {
+              self.isSetting.withValue { $0 = false }
             } else {
               state.workItem?.cancel()
               state.workItem = nil
@@ -306,8 +306,12 @@ public struct FileStorage: Hashable, Sendable {
         return data
       },
       save: { data, url in
-        fileSystem.withValue { $0[url] = data }
-        sourceHandlers.withValue { $0[url]?.forEach { $0.operation() } }
+        fileSystem.withValue {
+          $0[url] = data
+        }
+        sourceHandlers.withValue {
+          $0[url]?.forEach { $0.operation() }
+        }
       }
     )
   }
