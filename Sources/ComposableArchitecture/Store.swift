@@ -168,8 +168,14 @@ public final class Store<State, Action> {
   public convenience init<R: Reducer>(
     initialState: @autoclosure () -> R.State,
     @ReducerBuilder<State, Action> reducer: () -> R,
-    withDependencies prepareDependencies: ((inout DependencyValues) -> Void)? = nil
+    withDependencies prepareDependencies: ((inout DependencyValues) -> Void)? = nil,
+    file: StaticString = #file,
+    function: StaticString = #function,
+    line: UInt = #line
   ) where R.State == State, R.Action == Action {
+    defer {
+        LifetimeTrackingInstrumentation.shared?.onStoreCreated(file, function, line, self)
+    }
     if let prepareDependencies {
       let (initialState, reducer, dependencies) = withDependencies(prepareDependencies) {
         @Dependency(\.self) var dependencies
@@ -187,7 +193,14 @@ public final class Store<State, Action> {
     }
   }
 
-  init() {
+  init(
+    file: StaticString = #file,
+    function: StaticString = #function,
+    line: UInt = #line
+  ) {
+      defer {
+          LifetimeTrackingInstrumentation.shared?.onStoreCreated(file, function, line, self)
+      }
     self._isInvalidated = { true }
     self.rootStore = RootStore(initialState: (), reducer: EmptyReducer<Void, Never>())
     self.toState = .keyPath(\State.self)
@@ -392,8 +405,14 @@ public final class Store<State, Action> {
   private init(
     rootStore: RootStore,
     toState: PartialToState<State>,
-    fromAction: @escaping (Action) -> Any
+    fromAction: @escaping (Action) -> Any,
+    file: StaticString = #file,
+    function: StaticString = #function,
+    line: UInt = #line
   ) {
+      defer {
+          LifetimeTrackingInstrumentation.shared?.onStoreCreated(file, function, line, self)
+      }
     defer { Logger.shared.log("\(storeTypeName(of: self)).init") }
     self.rootStore = rootStore
     self.toState = toState
